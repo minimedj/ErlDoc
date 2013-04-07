@@ -43,24 +43,31 @@ class SpecDocCommand(sublime_plugin.TextCommand):
 	def make_spec_line(self, Str):
 		R = re.match('^-spec[\w\s\d]*\((.*)\)\s*->\s*(.*)\.', Str)
 		H = R.group(1)
-		P = []
-		for chunk in H.split(','):
-			Ch1 = re.match('^\s*([\w\d]*)\s*::.*', chunk)
-			P.append(Ch1.group(1))
+		if not H == '':
+			P = []
+			for chunk in H.split(','):
+				Ch1 = re.match('^\s*([\w\d]*)\s*::.*', chunk)
+				P.append(Ch1.group(1))
+			else:
+				Params = ', '.join(P)
+				Result = '%% @spec(' + Params + ') -> Result\n'
+				return Result
 		else:
-			Params = ', '.join(P)
-			Result = '%% @spec(' + Params + ') -> Result\n'
+			Result = '%% @spec() -> Result\n'
 			return Result
 
 	def make_param_list(self, Str):
 		R = re.match('^-spec[\w\s\d]*\((.*)\)\s*->\s*(.*)\.', Str)
 		H = R.group(1)
-		P = []
-		for chunk in H.split(','):
-			Ch1 = re.match('^\s*([\w\d]*)\s*::\s*(.*)\s*', chunk)
-			P.append('%%   ' + Ch1.group(1) + ' = ' + Ch1.group(2))
+		if not (H == ''):
+			P = []
+			for chunk in H.split(','):
+				Ch1 = re.match('^\s*([\w\d]*)\s*::\s*(.*)\s*', chunk)
+				P.append('%%   ' + Ch1.group(1) + ' = ' + Ch1.group(2))
+			else:
+				return '\n'.join(P) + '\n%%   Result = ' + R.group(2)
 		else:
-			return '\n'.join(P) + '\n%%   Result = ' + R.group(2)
+			return '%%   Result = ' + R.group(2)
 
 	def make_line(self):
 		return '%%------------------------------------------------------------------------------\n'
